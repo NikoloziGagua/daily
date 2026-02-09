@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#090909" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Daily Compass" />
+    <title>Daily Compass</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-pattern" aria-hidden="true"></div>
+
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button id="menuDrawerBtn" class="topbar-icon-btn" type="button" aria-label="Open menu">Menu</button>
+        <p class="topbar-brand">Daily Compass</p>
+      </div>
+
+      <nav class="topbar-nav" id="topNav" aria-label="Primary navigation">
+        <button type="button" data-page="dashboard" class="top-nav-link active">Dashboard</button>
+        <button type="button" data-page="planner" class="top-nav-link">Planner</button>
+        <button type="button" data-page="notes" class="top-nav-link">Notes</button>
+      </nav>
+
+      <div class="topbar-right">
+        <div class="dropdown" id="quickDropdown">
+          <button
+            id="dropdownToggleBtn"
+            class="ghost-btn dropdown-toggle"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Actions
+          </button>
+          <div id="dropdownMenu" class="dropdown-menu" hidden>
+            <button type="button" class="dropdown-item" data-action="open-quick-panel">Quick add task</button>
+            <button type="button" class="dropdown-item" data-action="rollover-now">Rollover pending</button>
+            <button type="button" class="dropdown-item" data-action="go-notes">Go to notes</button>
+          </div>
+        </div>
+        <button id="quickPanelBtn" class="secondary-btn topbar-quick-btn" type="button">Slideout</button>
+      </div>
+    </header>
+
+    <aside id="navDrawer" class="drawer" aria-hidden="true">
+      <div class="drawer-head">
+        <h2>Navigate</h2>
+        <button id="closeDrawerBtn" type="button" class="icon-btn">Close</button>
+      </div>
+      <nav class="drawer-links" id="drawerNav" aria-label="Mobile navigation">
+        <button type="button" data-page="dashboard" class="drawer-link">Dashboard</button>
+        <button type="button" data-page="planner" class="drawer-link">Planner</button>
+        <button type="button" data-page="notes" class="drawer-link">Notes</button>
+      </nav>
+    </aside>
+
+    <aside id="quickPanel" class="slideout" aria-hidden="true">
+      <div class="slideout-head">
+        <h2>Quick panel</h2>
+        <button id="closeQuickPanelBtn" type="button" class="icon-btn">Close</button>
+      </div>
+
+      <form id="quickTaskForm" class="quick-task-form">
+        <label class="field">
+          <span>Task</span>
+          <input id="quickTaskInput" type="text" maxlength="120" placeholder="Quickly add a task..." required />
+        </label>
+        <div class="row wrap">
+          <label class="field narrow">
+            <span>Context</span>
+            <select id="quickTaskContext">
+              <option value="Home">Home</option>
+              <option value="Work">Work</option>
+              <option value="Errands">Errands</option>
+            </select>
+          </label>
+          <label class="field narrow">
+            <span>Minutes</span>
+            <input id="quickTaskMinutes" type="number" value="25" min="5" max="300" />
+          </label>
+        </div>
+        <label class="field checkbox-field">
+          <input id="quickTaskMustDo" type="checkbox" />
+          <span>Must-do</span>
+        </label>
+        <button type="submit" class="primary-btn">Add task</button>
+      </form>
+
+      <div class="slideout-block">
+        <label class="field">
+          <span>Open planner on date</span>
+          <input id="quickPlannerDateInput" type="date" />
+        </label>
+        <button id="quickPlannerOpenBtn" type="button" class="secondary-btn">Open planner day</button>
+      </div>
+    </aside>
+
+    <div id="overlay" class="overlay" hidden></div>
+
+    <main class="app-shell" id="appShell">
+      <header class="hero" id="heroCard">
+        <div class="hero-copy">
+          <p class="hero-eyebrow">Daily Compass</p>
+          <h1 id="todayHeading">Your day, clearly focused.</h1>
+          <p id="dateLabel" class="hero-date"></p>
+        </div>
+        <button id="manualRolloverBtn" class="ghost-btn" type="button">Rollover Pending</button>
+      </header>
+
+      <section class="card planner-nav-card" id="plannerNavCard" hidden>
+        <div class="row between wrap">
+          <h2>Week planning</h2>
+          <div class="row wrap">
+            <button type="button" id="prevWeekBtn" class="secondary-btn planner-shift-btn">Prev week</button>
+            <button type="button" id="nextWeekBtn" class="secondary-btn planner-shift-btn">Next week</button>
+          </div>
+        </div>
+        <p id="plannerRangeLabel" class="hint"></p>
+        <div id="weekDayNav" class="chip-row week-day-nav"></div>
+        <p id="plannerDayLabel" class="prompt"></p>
+      </section>
+
+      <section class="card kickoff-card" id="kickoffCard">
+        <h2>Morning kickoff</h2>
+        <p class="prompt">What would make today successful?</p>
+        <textarea
+          id="kickoffInput"
+          rows="3"
+          maxlength="240"
+          placeholder="Write your intention for today..."
+        ></textarea>
+        <div class="row end">
+          <button id="saveKickoffBtn" class="primary-btn" type="button">Save kickoff</button>
+        </div>
+      </section>
+
+      <section class="metrics-grid" id="metricsGrid">
+        <article class="metric-card">
+          <p>Current streak</p>
+          <strong id="streakValue">0 days</strong>
+        </article>
+        <article class="metric-card">
+          <p>Consistency score</p>
+          <strong id="consistencyValue">0%</strong>
+        </article>
+        <article class="metric-card">
+          <p>Today complete</p>
+          <strong id="todayDoneValue">0 / 0</strong>
+        </article>
+      </section>
+
+      <section class="card add-task-card" id="addTaskCard">
+        <h2 id="addTaskHeading">Top priorities</h2>
+        <form id="taskForm" class="task-form">
+          <label class="field grow">
+            <span>Task</span>
+            <input
+              id="taskInput"
+              type="text"
+              maxlength="120"
+              autocomplete="off"
+              placeholder="Most important thing to do..."
+              required
+            />
+          </label>
+          <div class="field narrow">
+            <span>Context</span>
+            <select id="contextSelect">
+              <option value="Home">Home</option>
+              <option value="Work">Work</option>
+              <option value="Errands">Errands</option>
+            </select>
+          </div>
+          <div class="field narrow">
+            <span>Minutes</span>
+            <input id="minutesInput" type="number" value="25" min="5" max="300" />
+          </div>
+          <label class="field checkbox-field">
+            <input id="mustDoInput" type="checkbox" />
+            <span>Must-do</span>
+          </label>
+          <div class="row wrap">
+            <button type="submit" class="primary-btn">Add task</button>
+            <button type="button" id="voiceBtn" class="secondary-btn">Voice capture</button>
+          </div>
+        </form>
+        <p id="voiceStatus" class="hint">Tap voice capture and speak your task.</p>
+      </section>
+
+      <section class="card tasks-card" id="tasksCard">
+        <div class="row between wrap gap">
+          <h2 id="taskListHeading">Today list</h2>
+          <div class="chip-row" id="filterChips">
+            <button type="button" data-filter="All" class="chip active">All</button>
+            <button type="button" data-filter="Must-Do" class="chip">Must-Do</button>
+            <button type="button" data-filter="Home" class="chip">Home</button>
+            <button type="button" data-filter="Work" class="chip">Work</button>
+            <button type="button" data-filter="Errands" class="chip">Errands</button>
+          </div>
+        </div>
+        <ul id="taskList" class="task-list" aria-live="polite"></ul>
+        <p id="emptyTasks" class="empty-copy">No tasks yet. Add your first must-do above.</p>
+      </section>
+
+      <section class="card reminder-card" id="reminderCard">
+        <div class="row between">
+          <h2>Gentle reminders</h2>
+          <label class="toggle">
+            <input id="reminderToggle" type="checkbox" />
+            <span>Enabled</span>
+          </label>
+        </div>
+        <p id="routineInsight" class="hint"></p>
+        <div class="row wrap">
+          <label class="field narrow">
+            <span>Reminder time</span>
+            <input id="reminderTimeInput" type="time" />
+          </label>
+          <button id="saveReminderBtn" class="secondary-btn" type="button">Save reminder</button>
+        </div>
+        <p id="reminderStatus" class="hint"></p>
+      </section>
+
+      <section class="card recap-card" id="recapCard">
+        <h2>End-of-day recap</h2>
+        <p id="recapSummary" class="prompt"></p>
+        <div id="delayReasonsWrap"></div>
+        <label class="field">
+          <span>What worked, what slipped, and why?</span>
+          <textarea
+            id="recapInput"
+            rows="4"
+            maxlength="400"
+            placeholder="Short reflection for your future self..."
+          ></textarea>
+        </label>
+        <div class="row end">
+          <button id="saveRecapBtn" class="primary-btn" type="button">Save recap</button>
+        </div>
+      </section>
+
+      <section class="card weekly-card" id="weeklyCard">
+        <h2>Weekly review</h2>
+        <div id="weeklyReview"></div>
+      </section>
+
+      <section class="card notes-toolbar-card" id="notesToolbarCard" hidden>
+        <h2>Notes</h2>
+        <div class="row wrap">
+          <label class="field grow">
+            <span>Search notes</span>
+            <input id="notesSearchInput" type="text" maxlength="120" placeholder="Search by title or text..." />
+          </label>
+          <label class="field narrow">
+            <span>Sort</span>
+            <select id="notesSortSelect">
+              <option value="recent">Most recent</option>
+              <option value="pinned">Pinned first</option>
+              <option value="title">Title A-Z</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="card notes-editor-card" id="notesEditorCard" hidden>
+        <h2>Create note</h2>
+        <form id="noteForm" class="note-form">
+          <label class="field">
+            <span>Title</span>
+            <input id="noteTitleInput" type="text" maxlength="80" placeholder="Note title..." required />
+          </label>
+          <label class="field">
+            <span>Body</span>
+            <textarea id="noteBodyInput" rows="5" maxlength="1200" placeholder="Write your note..."></textarea>
+          </label>
+          <div class="row between wrap">
+            <label class="field checkbox-field">
+              <input id="notePinInput" type="checkbox" />
+              <span>Pin note</span>
+            </label>
+            <button id="saveNoteBtn" class="primary-btn" type="submit">Save note</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card notes-list-card" id="notesListCard" hidden>
+        <h2>Your notes</h2>
+        <ul id="notesList" class="notes-list"></ul>
+        <p id="emptyNotes" class="empty-copy">No notes yet. Add your first note above.</p>
+      </section>
+
+      <section class="card install-card" id="installCard">
+        <h2>Install on iPhone</h2>
+        <ol>
+          <li>Open this page in Safari.</li>
+          <li>Tap the Share icon.</li>
+          <li>Select Add to Home Screen.</li>
+        </ol>
+      </section>
+    </main>
+
+    <template id="taskItemTemplate">
+      <li class="task-item">
+        <label class="task-main">
+          <input type="checkbox" class="task-check" />
+          <span class="task-text"></span>
+        </label>
+        <div class="task-meta"></div>
+        <div class="task-actions">
+          <button type="button" class="icon-btn edit-btn" aria-label="Edit task">Edit</button>
+          <button type="button" class="icon-btn delete-btn" aria-label="Delete task">Delete</button>
+        </div>
+      </li>
+    </template>
+
+    <template id="noteItemTemplate">
+      <li class="note-item">
+        <div class="note-item-head">
+          <strong class="note-title"></strong>
+          <div class="note-actions">
+            <button type="button" class="icon-btn note-pin-btn">Pin</button>
+            <button type="button" class="icon-btn note-edit-btn">Edit</button>
+            <button type="button" class="icon-btn note-delete-btn">Delete</button>
+          </div>
+        </div>
+        <p class="note-body"></p>
+        <p class="note-meta"></p>
+      </li>
+    </template>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
