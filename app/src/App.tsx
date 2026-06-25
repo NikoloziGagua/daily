@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react'
 import { StoreProvider, useStore } from './store'
 import { TabBar, Tab } from './components/TabBar'
 import { TodayScreen } from './components/TodayScreen'
+import { DashboardScreen } from './components/DashboardScreen'
 import { PlannerScreen } from './components/PlannerScreen'
 import { NotesScreen } from './components/NotesScreen'
 import { AddTaskSheet } from './components/AddTaskSheet'
@@ -24,6 +25,7 @@ function Shell() {
         <main className="flex-1 overflow-y-auto hide-scrollbar" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <AnimatePresence mode="wait">
             {tab === 'today' && <TodayScreen key="today" />}
+            {tab === 'dashboard' && <DashboardScreen key="dashboard" />}
             {tab === 'planner' && <PlannerScreen key="planner" selected={plannerDate} onSelect={setPlannerDate} />}
             {tab === 'notes' && <NotesScreen key="notes" />}
           </AnimatePresence>
