@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .ios-hairline-b { border-bottom: 0.5px solid rgba(60, 60, 67, 0.12); }
+  .ios-hairline-t { border-top: 0.5px solid rgba(60, 60, 67, 0.12); }
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: #f2f2f7;
+  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, textarea, select, button { font-family: inherit; }
+
+/* Native-feeling circular task checkbox */
+.ios-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #c7c7cc;
+  background: #fff;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  flex: none;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+.ios-check:checked { background: #007aff; border-color: #007aff; }
+.ios-check:active { transform: scale(0.85); }
+.ios-check:checked::after {
+  content: "";
+  width: 5px;
+  height: 10px;
+  margin-top: -1px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
