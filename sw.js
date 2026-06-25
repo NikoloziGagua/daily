@@ -1,4 +1,7 @@
-const CACHE_NAME = "daily-compass-cache-v4";
+const CACHE_VERSION = "v5";
+const PRECACHE = "daily-compass-precache-" + CACHE_VERSION;
+const RUNTIME = "daily-compass-runtime-" + CACHE_VERSION;
+const KEEP_CACHES = [PRECACHE, RUNTIME];
 const OFFLINE_ASSETS = [
   "./",
   "./index.html",
@@ -12,7 +15,7 @@ const OFFLINE_ASSETS = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(PRECACHE).then((cache) => {
       return cache.addAll(OFFLINE_ASSETS);
     })
   );
@@ -24,7 +27,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          if (!KEEP_CACHES.includes(key)) {
             return caches.delete(key);
           }
           return Promise.resolve();
@@ -40,6 +43,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Only manage same-origin traffic. Cross-origin requests (e.g. web fonts)
+  // are left to the browser so they never accumulate in our caches.
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   const isDocumentRequest = event.request.mode === "navigate";
 
   if (isDocumentRequest) {
@@ -47,7 +57,7 @@ self.addEventListener("fetch", (event) => {
       fetch(event.request)
         .then((response) => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
+          caches.open(PRECACHE).then((cache) => cache.put("./index.html", copy));
           return response;
         })
         .catch(() => caches.match("./index.html"))
@@ -63,7 +73,7 @@ self.addEventListener("fetch", (event) => {
       return fetch(event.request)
         .then((response) => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          caches.open(RUNTIME).then((cache) => cache.put(event.request, copy));
           return response;
         })
         .catch(() => caches.match("./index.html"));

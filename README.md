@@ -24,9 +24,9 @@ Minimal smart daily planning app as a web PWA.
 
 Serve this folder with any static server, for example:
 
-```powershell
-cd D:\app1
-python -m http.server 5500 --bind 0.0.0.0
+```bash
+cd path/to/daily-compass
+python3 -m http.server 5500 --bind 0.0.0.0
 ```
 
 Open:
@@ -45,8 +45,8 @@ Open:
 1. Create an empty GitHub repository.
 2. Run:
 
-```powershell
-cd D:\app1
+```bash
+cd path/to/daily-compass
 git init
 git add .
 git commit -m "Initial Daily Compass app"
