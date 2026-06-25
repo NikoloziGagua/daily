@@ -27,6 +27,10 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # Enable Pages via the API if it isn't already, so the first
+          # deploy can't fail with "Get Pages site failed".
+          enablement: true
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
