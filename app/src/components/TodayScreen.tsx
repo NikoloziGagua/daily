@@ -48,10 +48,10 @@ export function TodayScreen({ onFocus }: { onFocus: () => void }) {
 
       <div className="grid grid-cols-2 gap-3">
         {/* Hero progress with animated glow */}
-        <motion.section variants={item} className="col-span-2 relative overflow-hidden bg-card rounded-tile shadow-tile p-5 flex items-center gap-5">
+        <motion.section variants={item} className="col-span-2 relative overflow-hidden glass rounded-tile p-5 flex items-center gap-5">
           <motion.div
             className="absolute -left-12 -top-14 w-48 h-48 rounded-full blur-3xl pointer-events-none"
-            style={{ background: 'radial-gradient(closest-side,#7C7CF5,transparent)' }}
+            style={{ background: 'radial-gradient(closest-side,#C9A27A,transparent)' }}
             animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0.72, 0.5] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -68,13 +68,13 @@ export function TodayScreen({ onFocus }: { onFocus: () => void }) {
           </div>
         </motion.section>
 
-        <motion.section variants={item} className="bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="glass rounded-tile p-5">
           <div className="w-9 h-9 rounded-full bg-[#FFF0E8] grid place-content-center"><Flame size={19} className="text-flame" /></div>
           <div className="text-[30px] font-extrabold tracking-tight mt-3 leading-none"><NumberFlow value={s.streak} /></div>
           <p className="text-[13px] text-sub mt-1">day streak</p>
         </motion.section>
 
-        <motion.section variants={item} className="bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="glass rounded-tile p-5">
           <div className="w-9 h-9 rounded-full bg-accentSoft grid place-content-center"><Sparkles size={18} className="text-accent" /></div>
           <div className="text-[30px] font-extrabold tracking-tight mt-3 leading-none"><NumberFlow value={s.consistency} />%</div>
           <p className="text-[13px] text-sub mt-1">consistency</p>
@@ -82,7 +82,7 @@ export function TodayScreen({ onFocus }: { onFocus: () => void }) {
 
         {/* Up next + Focus */}
         <motion.section variants={item} className="col-span-2 relative overflow-hidden rounded-tile p-5 bg-ink text-white shadow-pop">
-          <div className="absolute right-0 top-0 w-40 h-40 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: 'radial-gradient(closest-side,#6f6cff,transparent)' }} />
+          <div className="absolute right-0 top-0 w-40 h-40 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: 'radial-gradient(closest-side,#C9A27A,transparent)' }} />
           <div className="relative flex items-center justify-between">
             <p className="text-[12px] uppercase tracking-[0.08em] text-white/55 font-semibold">Up next</p>
             <button onClick={() => { haptic(10); onFocus() }} className="flex items-center gap-1.5 text-[13px] font-semibold bg-white/12 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full">
@@ -95,7 +95,7 @@ export function TodayScreen({ onFocus }: { onFocus: () => void }) {
                 <div className="flex-1 min-w-0">
                   <p className="text-[19px] font-bold leading-snug">{upNext.title}</p>
                   <div className="flex gap-2 mt-1.5 text-[13px] text-white/60">
-                    {upNext.mustDo && <span className="text-[#a6a3ff] font-semibold">Must-do</span>}
+                    {upNext.mustDo && <span className="text-[#E2CFA9] font-semibold">Must-do</span>}
                     <span>{upNext.context}</span><span>·</span><span>{upNext.minutes} min</span>
                   </div>
                 </div>
@@ -106,13 +106,13 @@ export function TodayScreen({ onFocus }: { onFocus: () => void }) {
               </motion.div>
             ) : (
               <motion.div key="clear" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative flex items-center gap-2 mt-2 text-[18px] font-bold">
-                <Check size={22} className="text-[#a6a3ff]" /> All clear for today
+                <Check size={22} className="text-[#E2CFA9]" /> All clear for today
               </motion.div>
             )}
           </AnimatePresence>
         </motion.section>
 
-        <motion.section variants={item} className="col-span-2 bg-card rounded-tile shadow-tile px-5 py-4">
+        <motion.section variants={item} className="col-span-2 glass rounded-tile px-5 py-4">
           <input value={intention} onChange={(e) => s.setIntention(today, e.target.value)}
             placeholder="✍️  Set an intention for today…"
             className="w-full text-[16px] bg-transparent outline-none placeholder-faint" />

@@ -12,9 +12,9 @@ export function ProgressRing({ progress, size = 60, stroke = 5, label }: { progr
   return (
     <div className="relative grid place-items-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#ECEBE5" strokeWidth={stroke} fill="transparent" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E7DCC8" strokeWidth={stroke} fill="transparent" />
         <motion.circle
-          cx={size / 2} cy={size / 2} r={r} stroke="#4F46E5" strokeWidth={stroke} fill="transparent" strokeLinecap="round"
+          cx={size / 2} cy={size / 2} r={r} stroke="#9C7A57" strokeWidth={stroke} fill="transparent" strokeLinecap="round"
           style={{ strokeDasharray: c }}
           initial={{ strokeDashoffset: reduce ? offset : c }}
           animate={{ strokeDashoffset: offset }}

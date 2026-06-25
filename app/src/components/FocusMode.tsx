@@ -44,7 +44,7 @@ export function FocusMode({ open, onClose }: { open: boolean; onClose: () => voi
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[80] bg-paper flex flex-col"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           {/* glow */}
-          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl opacity-50 pointer-events-none" style={{ background: 'radial-gradient(closest-side,#7C7CF5,transparent)' }} />
+          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl opacity-50 pointer-events-none" style={{ background: 'radial-gradient(closest-side,#C9A27A,transparent)' }} />
 
           <header className="relative flex items-center justify-between px-5 pt-4">
             <span className="text-[15px] font-semibold text-sub">{Math.min(done + 1, total)} / {total || 0}</span>
