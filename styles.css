@@ -107,11 +107,21 @@ body {
   grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: center;
-  padding: max(10px, env(safe-area-inset-top)) clamp(14px, 4vw, 28px) 11px;
+  padding: max(10px, env(safe-area-inset-top)) clamp(16px, 5vw, 22px) 11px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--hairline);
+}
+
+/* Bottom tab bar replaces the top segmented nav, hamburger and actions menu */
+.topbar-nav,
+.topbar-icon-btn,
+.topbar-right .dropdown {
+  display: none !important;
 }
 
 .topbar-left,
@@ -332,11 +342,11 @@ body {
 /* ---------- Layout ---------- */
 
 .app-shell {
-  width: min(1040px, 100%);
+  width: min(500px, 100%);
   margin: 0 auto;
-  padding: 22px clamp(14px, 4vw, 28px) max(36px, env(safe-area-inset-bottom));
+  padding: 12px clamp(16px, 5vw, 22px) calc(94px + env(safe-area-inset-bottom));
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .app-shell > * {
@@ -351,43 +361,44 @@ body {
 
 /* ---------- Hero ---------- */
 
+/* iOS-style large title sitting on the grouped background */
 .hero {
   display: grid;
-  gap: 8px;
-  padding: clamp(22px, 4vw, 34px) clamp(20px, 4vw, 32px);
-  background: var(--bg-elevated);
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-xl);
-  box-shadow: var(--shadow-sm);
+  gap: 2px;
+  padding: 8px 4px 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .hero-eyebrow {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--accent);
 }
 
 .hero-copy h1 {
-  margin: 2px 0 4px;
-  font-size: clamp(1.7rem, 5vw, 2.5rem);
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 2.4rem);
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--text);
   text-wrap: balance;
 }
 
 .hero-date {
-  margin: 0;
-  font-size: 1rem;
+  margin: 3px 0 0;
+  font-size: 0.98rem;
   color: var(--muted);
 }
 
 .hero .ghost-btn {
   justify-self: start;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 /* ---------- Cards ---------- */
@@ -427,15 +438,17 @@ body {
 
 .metrics-grid {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .metric-card {
-  padding: 20px;
+  padding: 16px 10px;
   display: grid;
   gap: 5px;
   align-content: center;
+  justify-items: center;
+  text-align: center;
   background: var(--card);
   border: 1px solid var(--hairline);
   border-radius: var(--r-lg);
@@ -451,12 +464,12 @@ body {
 .metric-card p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 0.76rem;
   font-weight: 500;
 }
 
 .metric-card strong {
-  font-size: 1.7rem;
+  font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--text);
@@ -464,14 +477,14 @@ body {
 
 /* Progress ring */
 .metric-progress {
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 14px;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 7px;
 }
 
 .ring {
   --p: 0;
-  --size: 64px;
+  --size: 54px;
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
@@ -493,7 +506,9 @@ body {
 
 .metric-text {
   display: grid;
-  gap: 3px;
+  gap: 2px;
+  justify-items: center;
+  text-align: center;
 }
 
 /* ---------- Forms ---------- */
@@ -1047,34 +1062,62 @@ button:active {
   color: var(--accent);
 }
 
+/* ---------- Bottom tab bar (iOS) ---------- */
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 95;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--hairline);
+}
+
+.tabbar-inner {
+  width: min(500px, 100%);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  padding: 7px 10px 5px;
+}
+
+.tab-btn {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  background: transparent;
+  border: 0;
+  padding: 4px 2px;
+  color: var(--faint);
+  font-size: 0.66rem;
+  font-weight: 600;
+  transition: color 0.2s var(--ease), transform 0.12s var(--spring);
+}
+
+.tab-btn:active { transform: scale(0.9); }
+.tab-btn .tab-ico { display: grid; }
+.tab-btn .tab-ico svg { width: 26px; height: 26px; display: block; }
+.tab-btn.active { color: var(--accent); }
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 760px) {
-  .topbar { grid-template-columns: auto 1fr auto; }
-  .topbar-nav { display: none; }
   .topbar-right .dropdown { display: none; }
   .topbar-quick-btn { min-height: 36px; padding: 0 14px; font-size: 0.85rem; }
-  .metrics-grid { grid-template-columns: 1fr 1fr; }
-  .metric-progress { grid-column: 1 / -1; }
   .weekly-grid { grid-template-columns: 1fr; }
   .bar-row { grid-template-columns: 58px 1fr auto; }
 }
 
-@media (max-width: 440px) {
-  .metrics-grid { grid-template-columns: 1fr; }
-}
-
-@media (min-width: 761px) {
-  .topbar-icon-btn { display: none; }
-
-  .task-form {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: minmax(280px, 1.6fr) repeat(3, minmax(110px, 0.5fr));
-    align-items: end;
-  }
-
-  .task-form .row { grid-column: 1 / -1; }
+@media (max-width: 360px) {
+  .metric-card strong { font-size: 1.2rem; }
+  .metric-card p { font-size: 0.72rem; }
 }
 
 /* ---------- Motion preference ---------- */

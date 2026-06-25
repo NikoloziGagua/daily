@@ -57,6 +57,7 @@
   function cacheElements() {
     el.topNav = document.getElementById("topNav");
     el.drawerNav = document.getElementById("drawerNav");
+    el.tabbar = document.getElementById("tabbar");
     el.menuDrawerBtn = document.getElementById("menuDrawerBtn");
     el.closeDrawerBtn = document.getElementById("closeDrawerBtn");
     el.navDrawer = document.getElementById("navDrawer");
@@ -141,6 +142,7 @@
   function bindEvents() {
     bindPageNavigation(el.topNav);
     bindPageNavigation(el.drawerNav);
+    bindPageNavigation(el.tabbar);
 
     el.menuDrawerBtn.addEventListener("click", openDrawer);
     el.closeDrawerBtn.addEventListener("click", closeDrawer);
@@ -857,23 +859,20 @@
     if (app.activePage === "planner") {
       const key = getPlannerDateKey();
       const weekKeys = getWeekDateKeys(key);
-      const selectedDate = fromDateKey(key);
-      el.todayHeading.textContent = "Week planner for " + formatPlannerDay(selectedDate);
+      el.todayHeading.textContent = "Planner";
       el.dateLabel.textContent =
-        "Week range: " + formatMonthDay(fromDateKey(weekKeys[0])) + " - " + formatMonthDay(fromDateKey(weekKeys[6]));
+        "Week of " + formatMonthDay(fromDateKey(weekKeys[0])) + " – " + formatMonthDay(fromDateKey(weekKeys[6]));
       return;
     }
 
     if (app.activePage === "notes") {
-      el.todayHeading.textContent = "Notes vault";
+      el.todayHeading.textContent = "Notes";
       el.dateLabel.textContent = "Capture ideas, plans, and quick references.";
       return;
     }
 
     const now = new Date();
-    const day = getTodayDay();
-    const kickoffText = day.kickoff ? " Today: " + day.kickoff : "";
-    el.todayHeading.textContent = "Your day, clearly focused." + kickoffText;
+    el.todayHeading.textContent = "Today";
     el.dateLabel.textContent = formatReadableDate(now);
   }
 

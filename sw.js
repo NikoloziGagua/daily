@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v7";
+const CACHE_VERSION = "v8";
 const PRECACHE = "daily-compass-precache-" + CACHE_VERSION;
 const RUNTIME = "daily-compass-runtime-" + CACHE_VERSION;
 const KEEP_CACHES = [PRECACHE, RUNTIME];
