@@ -26,12 +26,19 @@ function Shell() {
   const addDate = tab === 'planner' ? plannerDate : dateKey()
 
   return (
-    <div className="min-h-[100dvh] bg-paper flex justify-center">
-      <div className="relative w-full max-w-[500px] min-h-[100dvh] bg-paper flex flex-col overflow-hidden">
+    <div className="min-h-[100dvh] flex justify-center" style={{ background: '#E5D0B4' }}>
+      <div className="relative w-full max-w-[500px] min-h-[100dvh] flex flex-col overflow-hidden"
+        style={{ background: 'linear-gradient(160deg,#F8EFE0 0%,#F3E2CF 55%,#EBD3B8 100%)' }}>
+        {/* warm blobs for the glass to pick up */}
+        <div className="pointer-events-none absolute inset-0 z-0" style={{ background:
+          'radial-gradient(38% 26% at 12% 12%,rgba(255,224,192,0.75),transparent 60%),' +
+          'radial-gradient(42% 30% at 90% 8%,rgba(246,212,188,0.65),transparent 60%),' +
+          'radial-gradient(48% 38% at 84% 90%,rgba(231,206,176,0.6),transparent 60%),' +
+          'radial-gradient(40% 36% at 6% 92%,rgba(240,222,196,0.6),transparent 60%)' }} />
         {/* film grain */}
-        <div className="pointer-events-none absolute inset-0 z-[5] opacity-[0.04] mix-blend-multiply" style={{ backgroundImage: GRAIN }} />
+        <div className="pointer-events-none absolute inset-0 z-[5] opacity-[0.05] mix-blend-multiply" style={{ backgroundImage: GRAIN }} />
 
-        <main className="flex-1 overflow-y-auto hide-scrollbar" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <main className="relative z-10 flex-1 overflow-y-auto hide-scrollbar" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <AnimatePresence mode="wait">
             {tab === 'today' && <TodayScreen key="today" onFocus={() => { haptic(10); setFocusOpen(true) }} />}
             {tab === 'dashboard' && <DashboardScreen key="dashboard" />}

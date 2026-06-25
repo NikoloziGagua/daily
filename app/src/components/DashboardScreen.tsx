@@ -56,7 +56,7 @@ export function DashboardScreen() {
 
       <div className="grid grid-cols-2 gap-3">
         {/* Weekly chart hero */}
-        <motion.section variants={item} className="col-span-2 bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="col-span-2 glass rounded-tile p-5">
           <div className="flex items-baseline gap-2">
             <span className="text-[34px] font-extrabold tracking-tight leading-none"><NumberFlow value={weekDone} /></span>
             <span className="text-[15px] text-sub font-medium">{weekDone === 1 ? 'task' : 'tasks'} done this week</span>
@@ -86,21 +86,21 @@ export function DashboardScreen() {
         </motion.section>
 
         {/* Must-do rate */}
-        <motion.section variants={item} className="bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="glass rounded-tile p-5">
           <div className="w-9 h-9 rounded-full bg-accentSoft grid place-content-center"><Target size={18} className="text-accent" /></div>
           <div className="text-[30px] font-extrabold tracking-tight mt-3 leading-none"><NumberFlow value={mustRate} />%</div>
           <p className="text-[13px] text-sub mt-1">must-do rate</p>
         </motion.section>
 
         {/* Focus time */}
-        <motion.section variants={item} className="bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="glass rounded-tile p-5">
           <div className="w-9 h-9 rounded-full bg-[#FFF0E8] grid place-content-center"><Clock size={18} className="text-flame" /></div>
           <div className="text-[30px] font-extrabold tracking-tight mt-3 leading-none">{fmtDuration(focusMin)}</div>
           <p className="text-[13px] text-sub mt-1">focused time</p>
         </motion.section>
 
         {/* By context */}
-        <motion.section variants={item} className="col-span-2 bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="col-span-2 glass rounded-tile p-5">
           <p className="text-[12px] uppercase tracking-[0.07em] text-sub font-semibold mb-3.5">Time by context</p>
           <div className="space-y-3">
             {byCtx.map((c, i) => (
@@ -118,7 +118,7 @@ export function DashboardScreen() {
         </motion.section>
 
         {/* Recent wins */}
-        <motion.section variants={item} className="col-span-2 bg-card rounded-tile shadow-tile p-5">
+        <motion.section variants={item} className="col-span-2 glass rounded-tile p-5">
           <div className="flex items-center gap-2 mb-3">
             <Trophy size={16} className="text-flame" />
             <p className="text-[12px] uppercase tracking-[0.07em] text-sub font-semibold">Recent wins</p>
