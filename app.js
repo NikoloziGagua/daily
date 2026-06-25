@@ -91,6 +91,8 @@
     el.streakValue = document.getElementById("streakValue");
     el.consistencyValue = document.getElementById("consistencyValue");
     el.todayDoneValue = document.getElementById("todayDoneValue");
+    el.todayPercentValue = document.getElementById("todayPercentValue");
+    el.todayRing = document.getElementById("todayRing");
     el.addTaskHeading = document.getElementById("addTaskHeading");
     el.addTaskCard = document.getElementById("addTaskCard");
     el.taskListHeading = document.getElementById("taskListHeading");
@@ -171,7 +173,7 @@
 
     el.quickTaskForm.addEventListener("submit", function (event) {
       event.preventDefault();
-      addTaskFromValues({
+      const result = addTaskFromValues({
         text: el.quickTaskInput.value,
         context: el.quickTaskContext.value,
         minutes: el.quickTaskMinutes.value,
@@ -179,11 +181,18 @@
         source: "quick",
         dateKey: app.activePage === "planner" ? getPlannerDateKey() : todayKey(),
       });
+      if (!result.ok) {
+        return;
+      }
       el.quickTaskInput.value = "";
       el.quickTaskMustDo.checked = false;
       closeQuickPanel();
       renderAll();
-      showToast("Quick task added.");
+      showToast(
+        result.mustDoOverflow
+          ? "Quick task added. More than 3 must-do tasks are now active."
+          : "Quick task added."
+      );
     });
 
     el.quickPlannerOpenBtn.addEventListener("click", function () {
@@ -537,17 +546,42 @@
     }
   }
 
+  function emptyDay() {
+    return {
+      kickoff: "",
+      tasks: [],
+      recap: {
+        summary: "",
+        delayReasons: {},
+      },
+      rolledForward: false,
+    };
+  }
+
+  // Read-only view of a day. Unlike ensureDay it never inserts or persists,
+  // so analytics/render passes can scan past dates without fabricating records.
+  function getDay(dateKeyValue) {
+    const day = app.state.days[dateKeyValue];
+    if (!day || typeof day !== "object") {
+      return emptyDay();
+    }
+    return {
+      kickoff: typeof day.kickoff === "string" ? day.kickoff : "",
+      tasks: Array.isArray(day.tasks) ? day.tasks : [],
+      recap: {
+        summary: day.recap && typeof day.recap.summary === "string" ? day.recap.summary : "",
+        delayReasons:
+          day.recap && day.recap.delayReasons && typeof day.recap.delayReasons === "object"
+            ? day.recap.delayReasons
+            : {},
+      },
+      rolledForward: Boolean(day.rolledForward),
+    };
+  }
+
   function ensureDay(dateKeyValue) {
     if (!app.state.days[dateKeyValue]) {
-      app.state.days[dateKeyValue] = {
-        kickoff: "",
-        tasks: [],
-        recap: {
-          summary: "",
-          delayReasons: {},
-        },
-        rolledForward: false,
-      };
+      app.state.days[dateKeyValue] = emptyDay();
       return app.state.days[dateKeyValue];
     }
 
@@ -612,16 +646,25 @@
       return;
     }
 
-    let cursor = lastOpen;
+    // Only backfill a bounded window. After a long absence we skip the stale
+    // gap entirely instead of fabricating an empty record for every date.
+    const MAX_BACKFILL_DAYS = 30;
+    const earliest = shiftDateKey(today, -MAX_BACKFILL_DAYS);
+    let cursor = lastOpen < earliest ? earliest : lastOpen;
+
     while (cursor < today) {
       const next = shiftDateKey(cursor, 1);
-      ensureDay(cursor);
-      ensureDay(next);
-      const day = ensureDay(cursor);
+      const stored = app.state.days[cursor];
 
-      if (!day.rolledForward) {
-        copyPendingTasks(cursor, next);
-        day.rolledForward = true;
+      // Skip days the user never used so we don't materialize empty records.
+      if (stored) {
+        const day = ensureDay(cursor);
+        if (!day.rolledForward) {
+          if (day.tasks.some(function (task) { return !task.completed; })) {
+            copyPendingTasks(cursor, next);
+          }
+          day.rolledForward = true;
+        }
       }
 
       cursor = next;
@@ -678,7 +721,7 @@
   }
 
   function addTaskFromInput(source) {
-    const added = addTaskFromValues({
+    const result = addTaskFromValues({
       text: el.taskInput.value,
       context: el.contextSelect.value,
       minutes: el.minutesInput.value,
@@ -686,23 +729,28 @@
       source: source || "typed",
       dateKey: getActiveDateKey(),
     });
-    if (!added) {
+    if (!result.ok) {
       return;
     }
 
     el.taskInput.value = "";
-    if (source !== "voice") {
-      el.mustDoInput.checked = false;
-    }
+    el.mustDoInput.checked = false;
 
     renderAll();
-    showToast(source === "voice" ? "Voice task added." : "Task added.");
+    showToast(addTaskToastMessage(source, result.mustDoOverflow));
+  }
+
+  function addTaskToastMessage(source, mustDoOverflow) {
+    if (mustDoOverflow) {
+      return "Task added. Heads up: more than 3 must-do tasks are now active.";
+    }
+    return source === "voice" ? "Voice task added." : "Task added.";
   }
 
   function addTaskFromValues(input) {
     const text = String(input.text || "").trim().replace(/\s+/g, " ");
     if (!text) {
-      return false;
+      return { ok: false, mustDoOverflow: false };
     }
 
     const dateKeyValue = isValidDateKey(input.dateKey) ? input.dateKey : getActiveDateKey();
@@ -710,16 +758,14 @@
     const activeMustDos = day.tasks.filter(function (task) {
       return task.mustDo && !task.completed;
     }).length;
-
-    if (input.mustDo && activeMustDos >= 3) {
-      showToast("You already have 3 active must-do tasks.");
-    }
+    const mustDo = Boolean(input.mustDo);
+    const mustDoOverflow = mustDo && activeMustDos >= 3;
 
     day.tasks.push({
       id: uid(),
       text: text,
       context: CONTEXTS.includes(input.context) ? input.context : "Home",
-      mustDo: Boolean(input.mustDo),
+      mustDo: mustDo,
       minutes: normalizeMinutes(input.minutes),
       completed: false,
       createdAt: new Date().toISOString(),
@@ -730,7 +776,7 @@
     });
 
     saveState();
-    return true;
+    return { ok: true, mustDoOverflow: mustDoOverflow };
   }
 
   function setTaskCompleted(taskId, completed) {
@@ -852,7 +898,7 @@
     el.metricsGrid.hidden = !isDashboard;
     el.reminderCard.hidden = !isDashboard;
     el.recapCard.hidden = !isDashboard;
-    el.manualRolloverBtn.hidden = isNotes;
+    el.manualRolloverBtn.hidden = !isDashboard;
     el.plannerNavCard.hidden = !isPlanner;
     el.weeklyCard.hidden = !isPlanner;
     el.addTaskCard.hidden = isNotes;
@@ -904,7 +950,7 @@
       el.weekDayNav.appendChild(button);
     });
 
-    const selectedDay = ensureDay(getPlannerDateKey());
+    const selectedDay = getDay(getPlannerDateKey());
     const doneCount = selectedDay.tasks.filter(function (task) {
       return task.completed;
     }).length;
@@ -922,12 +968,21 @@
     }).length;
 
     const streak = computeStreak();
-    app.state.settings.bestStreak = Math.max(app.state.settings.bestStreak, streak);
-    saveState();
+    if (streak > app.state.settings.bestStreak) {
+      app.state.settings.bestStreak = streak;
+      saveState();
+    }
 
+    const todayPercent = total ? Math.round((completed / total) * 100) : 0;
     el.streakValue.textContent = streak + " day" + (streak === 1 ? "" : "s");
     el.consistencyValue.textContent = computeConsistencyScore() + "%";
     el.todayDoneValue.textContent = completed + " / " + total;
+    if (el.todayPercentValue) {
+      el.todayPercentValue.textContent = todayPercent + "%";
+    }
+    if (el.todayRing) {
+      el.todayRing.style.setProperty("--p", String(todayPercent));
+    }
   }
 
   function renderTasks() {
@@ -1191,16 +1246,18 @@
       const meta = fragment.querySelector(".note-meta");
       const pinBtn = fragment.querySelector(".note-pin-btn");
 
+      const noteTitle = typeof note.title === "string" ? note.title : "";
+      const noteBody = typeof note.body === "string" ? note.body : "";
       item.dataset.noteId = note.id;
       item.classList.toggle("pinned", Boolean(note.pinned));
-      title.textContent = note.title;
-      body.textContent = note.body;
+      title.textContent = noteTitle;
+      body.textContent = noteBody;
       meta.textContent =
         (note.pinned ? "Pinned · " : "") +
         "Updated " +
         formatReadableDateTime(note.updatedAt) +
         " · " +
-        note.body.length +
+        noteBody.length +
         " chars";
       pinBtn.textContent = note.pinned ? "Unpin" : "Pin";
 
@@ -1214,14 +1271,14 @@
 
     if (query) {
       list = list.filter(function (note) {
-        const haystack = (note.title + " " + note.body).toLowerCase();
+        const haystack = (String(note.title || "") + " " + String(note.body || "")).toLowerCase();
         return haystack.includes(query);
       });
     }
 
     list.sort(function (a, b) {
       if (app.notesSort === "title") {
-        return a.title.localeCompare(b.title);
+        return String(a.title || "").localeCompare(String(b.title || ""));
       }
       if (app.notesSort === "pinned") {
         const pinDiff = Number(Boolean(b.pinned)) - Number(Boolean(a.pinned));
@@ -1344,13 +1401,14 @@
     };
 
     keys.forEach(function (key) {
-      const day = ensureDay(key);
+      const day = getDay(key);
       day.tasks.forEach(function (task) {
+        const context = CONTEXTS.includes(task.context) ? task.context : "Home";
         if (task.completed) {
           totalCompleted += 1;
-          timeByContext[task.context] += normalizeMinutes(task.minutes);
+          timeByContext[context] += normalizeMinutes(task.minutes);
         } else {
-          delayByContext[task.context] += 1;
+          delayByContext[context] += 1;
         }
         if (task.mustDo) {
           totalMust += 1;
@@ -1412,12 +1470,12 @@
   }
 
   function hasTasks(dateKeyValue) {
-    const day = ensureDay(dateKeyValue);
+    const day = getDay(dateKeyValue);
     return day.tasks.length > 0;
   }
 
   function isSuccessfulDay(dateKeyValue) {
-    const day = ensureDay(dateKeyValue);
+    const day = getDay(dateKeyValue);
     if (day.tasks.length === 0) {
       return false;
     }
@@ -1440,7 +1498,7 @@
     let total = 0;
     let completed = 0;
     dates.forEach(function (key) {
-      const day = ensureDay(key);
+      const day = getDay(key);
       total += day.tasks.length;
       completed += day.tasks.filter(function (task) {
         return task.completed;
@@ -1463,7 +1521,7 @@
     const completionMinutes = [];
 
     dates.forEach(function (key) {
-      const day = ensureDay(key);
+      const day = getDay(key);
       day.tasks.forEach(function (task) {
         if (task.completedAt) {
           const date = new Date(task.completedAt);
