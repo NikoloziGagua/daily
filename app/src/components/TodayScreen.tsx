@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import NumberFlow from '@number-flow/react'
-import { Flame, Check, ArrowRight, Sparkles } from 'lucide-react'
+import { Flame, Check, ArrowRight, Sparkles, Zap } from 'lucide-react'
 import { useStore } from '../store'
 import { dateKey } from '../util'
+import { celebrate, haptic } from '../fx'
 import { ProgressRing, TaskRow } from './Shared'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
@@ -19,7 +20,7 @@ function greeting() {
   return 'Good evening'
 }
 
-export function TodayScreen() {
+export function TodayScreen({ onFocus }: { onFocus: () => void }) {
   const s = useStore()
   const today = dateKey()
   const tasks = s.tasksForDate(today)
@@ -30,18 +31,32 @@ export function TodayScreen() {
   const minutesLeft = tasks.filter((t) => !t.completed).reduce((a, t) => a + t.minutes, 0)
   const intention = s.state.intentions[today] || ''
 
+  // Earned confetti when the day's list flips to fully complete.
+  const wasComplete = useRef(false)
+  useEffect(() => {
+    const complete = tasks.length > 0 && done === tasks.length
+    if (complete && !wasComplete.current) celebrate()
+    wasComplete.current = complete
+  }, [done, tasks.length])
+
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="px-4 pt-4 pb-28">
+    <motion.div variants={container} initial="hidden" animate="show" className="px-4 pt-4 pb-32">
       <motion.header variants={item} className="px-1 mb-4">
         <p className="text-[15px] text-sub font-medium">{greeting()}</p>
         <h1 className="text-[32px] font-extrabold tracking-[-0.03em] leading-none mt-0.5">Today</h1>
       </motion.header>
 
       <div className="grid grid-cols-2 gap-3">
-        {/* Hero progress */}
-        <motion.section variants={item} className="col-span-2 bg-card rounded-tile shadow-tile p-5 flex items-center gap-5">
+        {/* Hero progress with animated glow */}
+        <motion.section variants={item} className="col-span-2 relative overflow-hidden bg-card rounded-tile shadow-tile p-5 flex items-center gap-5">
+          <motion.div
+            className="absolute -left-12 -top-14 w-48 h-48 rounded-full blur-3xl pointer-events-none"
+            style={{ background: 'radial-gradient(closest-side,#7C7CF5,transparent)' }}
+            animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0.72, 0.5] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          />
           <ProgressRing progress={progress} size={84} stroke={8} label={<span className="text-[20px] font-extrabold tracking-tight"><NumberFlow value={pct} />%</span>} />
-          <div className="flex-1">
+          <div className="relative flex-1">
             <h3 className="text-[18px] font-bold tracking-tight">{tasks.length === 0 ? 'Plan your day' : done === tasks.length ? 'All done' : 'Keep going'}</h3>
             <p className="text-[14px] text-sub mt-0.5">{tasks.length === 0 ? 'Add a task to get started.' : `${done} of ${tasks.length} tasks complete`}</p>
             <div className="flex gap-1.5 mt-3">
@@ -53,47 +68,50 @@ export function TodayScreen() {
           </div>
         </motion.section>
 
-        {/* Streak */}
         <motion.section variants={item} className="bg-card rounded-tile shadow-tile p-5">
           <div className="w-9 h-9 rounded-full bg-[#FFF0E8] grid place-content-center"><Flame size={19} className="text-flame" /></div>
           <div className="text-[30px] font-extrabold tracking-tight mt-3 leading-none"><NumberFlow value={s.streak} /></div>
           <p className="text-[13px] text-sub mt-1">day streak</p>
         </motion.section>
 
-        {/* Consistency */}
         <motion.section variants={item} className="bg-card rounded-tile shadow-tile p-5">
           <div className="w-9 h-9 rounded-full bg-accentSoft grid place-content-center"><Sparkles size={18} className="text-accent" /></div>
           <div className="text-[30px] font-extrabold tracking-tight mt-3 leading-none"><NumberFlow value={s.consistency} />%</div>
           <p className="text-[13px] text-sub mt-1">consistency</p>
         </motion.section>
 
-        {/* Up next */}
-        <motion.section variants={item} className="col-span-2 rounded-tile p-5 bg-ink text-white shadow-pop">
-          <p className="text-[12px] uppercase tracking-[0.08em] text-white/55 font-semibold">Up next</p>
+        {/* Up next + Focus */}
+        <motion.section variants={item} className="col-span-2 relative overflow-hidden rounded-tile p-5 bg-ink text-white shadow-pop">
+          <div className="absolute right-0 top-0 w-40 h-40 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: 'radial-gradient(closest-side,#6f6cff,transparent)' }} />
+          <div className="relative flex items-center justify-between">
+            <p className="text-[12px] uppercase tracking-[0.08em] text-white/55 font-semibold">Up next</p>
+            <button onClick={() => { haptic(10); onFocus() }} className="flex items-center gap-1.5 text-[13px] font-semibold bg-white/12 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full">
+              <Zap size={14} /> Focus
+            </button>
+          </div>
           <AnimatePresence mode="wait">
             {upNext ? (
-              <motion.div key={upNext.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="flex items-center gap-4 mt-2">
+              <motion.div key={upNext.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="relative flex items-center gap-4 mt-2">
                 <div className="flex-1 min-w-0">
                   <p className="text-[19px] font-bold leading-snug">{upNext.title}</p>
                   <div className="flex gap-2 mt-1.5 text-[13px] text-white/60">
-                    {upNext.mustDo && <span className="text-accent font-semibold">Must-do</span>}
+                    {upNext.mustDo && <span className="text-[#a6a3ff] font-semibold">Must-do</span>}
                     <span>{upNext.context}</span><span>·</span><span>{upNext.minutes} min</span>
                   </div>
                 </div>
-                <motion.button whileTap={{ scale: 0.85 }} onClick={() => s.toggleTask(upNext.id)}
+                <motion.button whileTap={{ scale: 0.85 }} onClick={() => { haptic(14); s.toggleTask(upNext.id) }}
                   className="flex-none w-12 h-12 rounded-full bg-white text-ink grid place-content-center shadow-lg">
                   <Check size={24} strokeWidth={2.6} />
                 </motion.button>
               </motion.div>
             ) : (
-              <motion.div key="clear" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 mt-2 text-[18px] font-bold">
-                <Check size={22} className="text-accent" /> All clear for today
+              <motion.div key="clear" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative flex items-center gap-2 mt-2 text-[18px] font-bold">
+                <Check size={22} className="text-[#a6a3ff]" /> All clear for today
               </motion.div>
             )}
           </AnimatePresence>
         </motion.section>
 
-        {/* Intention */}
         <motion.section variants={item} className="col-span-2 bg-card rounded-tile shadow-tile px-5 py-4">
           <input value={intention} onChange={(e) => s.setIntention(today, e.target.value)}
             placeholder="✍️  Set an intention for today…"
@@ -101,7 +119,6 @@ export function TodayScreen() {
         </motion.section>
       </div>
 
-      {/* Task list */}
       <motion.div variants={item} className="mt-6">
         <div className="flex items-baseline justify-between px-1 mb-2">
           <h2 className="text-[20px] font-bold tracking-tight">Tasks</h2>
