@@ -37,7 +37,7 @@ export function AddTaskSheet({ open, onClose, date, onAdd }: Props) {
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="absolute bottom-0 left-0 right-0 bg-ios-bg rounded-t-sheet z-[70] flex flex-col shadow-ios-lg"
+            className="absolute bottom-0 left-0 right-0 bg-paper rounded-t-sheet z-[70] flex flex-col shadow-ios-lg"
             style={{ maxHeight: '88%' }}
           >
             <div className="w-full flex justify-center pt-3 pb-1">
@@ -50,7 +50,7 @@ export function AddTaskSheet({ open, onClose, date, onAdd }: Props) {
             </div>
 
             <div className="p-4 space-y-5 overflow-y-auto hide-scrollbar">
-              <div className="bg-white rounded-ios shadow-ios-sm px-4 py-3.5">
+              <div className="bg-white rounded-ios shadow-tile px-4 py-3.5">
                 <input
                   autoFocus value={title} onChange={(e) => setTitle(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && submit()}
@@ -64,14 +64,14 @@ export function AddTaskSheet({ open, onClose, date, onAdd }: Props) {
                 <div className="flex gap-1 bg-ios-gray6 p-1 rounded-[10px]">
                   {CONTEXTS.map((c) => (
                     <button key={c} onClick={() => setContext(c)}
-                      className={`flex-1 py-2 rounded-[8px] text-[15px] font-medium transition-colors ${context === c ? 'bg-white text-ios-label shadow-ios-sm' : 'text-ios-secondary'}`}>
+                      className={`flex-1 py-2 rounded-[8px] text-[15px] font-medium transition-colors ${context === c ? 'bg-white text-ios-label shadow-tile' : 'text-ios-secondary'}`}>
                       {c}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-white rounded-ios shadow-ios-sm overflow-hidden">
+              <div className="bg-white rounded-ios shadow-tile overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 ios-hairline-b">
                   <span className="text-[17px]">Estimate</span>
                   <div className="flex items-center gap-3">
