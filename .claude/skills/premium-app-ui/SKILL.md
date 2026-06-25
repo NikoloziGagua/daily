@@ -31,15 +31,34 @@ accent · big soft floating shadows · bento tiles · spring motion everywhere.
 - The user dislikes plain/boring layouts. Bento + a focal "Up Next" tile + a
   hero with a subtle animated aura is the baseline that worked.
 
-## Stack
-- **Vite + React + TypeScript + Tailwind** (build to static; `base: './'` for
+## Default frontend stack — ALWAYS use these
+This is the standing dependency stack for ANY frontend/UI work (this project or a
+new one). Reach for these by default rather than hand-rolling CSS/animations:
+
+```bash
+# core
+npm i react react-dom
+npm i -D vite @vitejs/plugin-react typescript tailwindcss postcss autoprefixer
+# motion · icons · animated numbers · delight
+npm i framer-motion lucide-react @number-flow/react canvas-confetti
+# add when the UI needs richer gestures / drag-reorder
+npm i @use-gesture/react @dnd-kit/core @dnd-kit/sortable
+```
+
+- **Vite + React + TypeScript + Tailwind** — base build (static; `base: './'` for
   subpath hosting like GitHub Pages `/repo/`).
-- **framer-motion** (a.k.a. Motion) — springs, layout/`layoutId`, `AnimatePresence`,
-  `drag`, `useMotionValue`/`useTransform`.
-- **lucide-react** — icons.
-- **@number-flow/react** — rolling animated numbers for stats/percentages.
-- **canvas-confetti** — earned celebration only (e.g. day fully complete).
-- Optional: `@use-gesture/react`, `dnd-kit` for richer gestures/reorder.
+- **framer-motion** (Motion) — springs, layout/`layoutId`, `AnimatePresence`,
+  `drag`, `useMotionValue`/`useTransform`. Use it instead of hand-written CSS
+  keyframes for anything interactive.
+- **lucide-react** — icon set (never inline ad-hoc SVGs when a lucide icon fits).
+- **@number-flow/react** — every stat/counter/percentage animates.
+- **canvas-confetti** — earned celebration only (e.g. a day/goal completed).
+- **@use-gesture/react** + **@dnd-kit** — swipe/drag/reorder gestures.
+- Optional flair when asked: `@paper-design/shaders-react` (liquid/aurora),
+  Aceternity/React Bits components, `lottie-react`.
+
+Rule of thumb: if a polished library exists for it (motion, icons, numbers,
+gestures, charts), use the library — don't reinvent it in raw CSS/JS.
 
 ## Design tokens (Tailwind `theme.extend`)
 ```js
