@@ -146,21 +146,27 @@
         </div>
       </section>
 
-      <section class="metrics-grid" id="metricsGrid">
-        <article class="metric-card">
-          <p>Current streak</p>
-          <strong id="streakValue">0 days</strong>
-        </article>
-        <article class="metric-card">
-          <p>Consistency score</p>
-          <strong id="consistencyValue">0%</strong>
-        </article>
-        <article class="metric-card metric-progress">
+      <section class="today-summary" id="metricsGrid">
+        <article class="focus-card">
           <div class="ring" id="todayRing" style="--p: 0">
             <span class="ring-label" id="todayDoneValue">0 / 0</span>
           </div>
-          <div class="metric-text">
-            <p>Today complete</p>
+          <div class="focus-copy">
+            <h3 id="focusTitle">Today</h3>
+            <p class="focus-sub" id="focusSub">Add a task to get started.</p>
+          </div>
+        </article>
+        <article class="stats-strip">
+          <div class="stat">
+            <span class="stat-label">Streak</span>
+            <strong id="streakValue">0 days</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Consistency</span>
+            <strong id="consistencyValue">0%</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Done</span>
             <strong id="todayPercentValue">0%</strong>
           </div>
         </article>
@@ -316,6 +322,10 @@
       </section>
     </main>
 
+    <button id="fab" class="fab" type="button" aria-label="Add task">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+    </button>
+
     <nav class="tabbar" id="tabbar" aria-label="Main tabs">
       <div class="tabbar-inner">
         <button type="button" data-page="dashboard" class="tab-btn active">
@@ -341,11 +351,11 @@
 
     <template id="taskItemTemplate">
       <li class="task-item">
-        <label class="task-main">
-          <input type="checkbox" class="task-check" />
+        <input type="checkbox" class="task-check" aria-label="Toggle task complete" />
+        <div class="task-main">
           <span class="task-text"></span>
-        </label>
-        <div class="task-meta"></div>
+          <div class="task-meta"></div>
+        </div>
         <div class="task-actions">
           <button type="button" class="icon-btn edit-btn" aria-label="Edit task">Edit</button>
           <button type="button" class="icon-btn delete-btn" aria-label="Delete task">Delete</button>

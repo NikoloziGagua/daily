@@ -94,6 +94,9 @@
     el.todayDoneValue = document.getElementById("todayDoneValue");
     el.todayPercentValue = document.getElementById("todayPercentValue");
     el.todayRing = document.getElementById("todayRing");
+    el.focusTitle = document.getElementById("focusTitle");
+    el.focusSub = document.getElementById("focusSub");
+    el.fab = document.getElementById("fab");
     el.addTaskHeading = document.getElementById("addTaskHeading");
     el.addTaskCard = document.getElementById("addTaskCard");
     el.taskListHeading = document.getElementById("taskListHeading");
@@ -244,6 +247,10 @@
     });
 
     el.voiceBtn.addEventListener("click", startVoiceCapture);
+
+    if (el.fab) {
+      el.fab.addEventListener("click", openQuickPanel);
+    }
 
     el.filterChips.addEventListener("click", function (event) {
       const button = event.target.closest("button[data-filter]");
@@ -906,6 +913,9 @@
     el.notesEditorCard.hidden = !isNotes;
     el.notesListCard.hidden = !isNotes;
     el.installCard.hidden = !isDashboard;
+    if (el.fab) {
+      el.fab.hidden = isNotes;
+    }
 
     if (isDashboard || isNotes) {
       setQuickPlannerDateInput(todayKey());
@@ -981,6 +991,16 @@
     }
     if (el.todayRing) {
       el.todayRing.style.setProperty("--p", String(todayPercent));
+    }
+    if (el.focusTitle) {
+      el.focusTitle.textContent =
+        total > 0 && completed === total ? "All done!" : total > 0 ? "Keep going" : "Today";
+    }
+    if (el.focusSub) {
+      el.focusSub.textContent =
+        total > 0
+          ? "You've completed " + completed + " of " + total + " today."
+          : "Add a task to get started.";
     }
   }
 
