@@ -19,8 +19,8 @@ function Shell() {
   const addDate = tab === 'planner' ? plannerDate : dateKey()
 
   return (
-    <div className="min-h-[100dvh] bg-ios-bg flex justify-center">
-      <div className="relative w-full max-w-[500px] min-h-[100dvh] bg-ios-bg flex flex-col overflow-hidden">
+    <div className="min-h-[100dvh] bg-paper flex justify-center">
+      <div className="relative w-full max-w-[500px] min-h-[100dvh] bg-paper flex flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto hide-scrollbar" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <AnimatePresence mode="wait">
             {tab === 'today' && <TodayScreen key="today" />}
@@ -37,7 +37,7 @@ function Shell() {
               whileTap={{ scale: 0.88 }}
               transition={{ type: 'spring', stiffness: 400, damping: 22 }}
               onClick={() => setAddOpen(true)}
-              className="absolute right-5 bottom-[88px] w-14 h-14 rounded-full bg-ios-blue text-white grid place-content-center shadow-ios-md z-50"
+              className="absolute right-5 bottom-[88px] w-14 h-14 rounded-full bg-ink text-white grid place-content-center shadow-pop z-50"
               style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
               aria-label="Add task"
             >

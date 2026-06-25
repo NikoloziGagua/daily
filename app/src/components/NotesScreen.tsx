@@ -8,7 +8,7 @@ import { fmtRelative } from '../util'
 function NoteCard({ note, onOpen, onPin }: { note: Note; onOpen: () => void; onPin: () => void }) {
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
-      onClick={onOpen} className="bg-white rounded-ios shadow-ios-sm p-4 relative active:bg-ios-gray6 transition-colors">
+      onClick={onOpen} className="bg-white rounded-ios shadow-tile p-4 relative active:bg-ios-gray6 transition-colors">
       <div className="flex justify-between items-start mb-1 gap-2">
         <h3 className="text-[17px] font-semibold truncate">{note.title || 'Untitled'}</h3>
         <button onClick={(e) => { e.stopPropagation(); onPin() }} className="flex-none">
@@ -46,7 +46,7 @@ export function NotesScreen() {
       <div className="relative px-1">
         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-ios-secondary pointer-events-none" />
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search"
-          className="w-full bg-[#E3E3E8] rounded-[10px] py-2.5 pl-10 pr-4 text-[17px] placeholder-ios-secondary outline-none" />
+          className="w-full bg-paper2 rounded-[10px] py-2.5 pl-10 pr-4 text-[17px] placeholder-ios-secondary outline-none" />
       </div>
 
       {pinned.length > 0 && (
@@ -59,7 +59,7 @@ export function NotesScreen() {
       <section>
         {pinned.length > 0 && <h2 className="text-[13px] uppercase tracking-wide text-ios-secondary font-medium px-4 mb-2">Recent</h2>}
         {recent.length === 0 && pinned.length === 0 ? (
-          <div className="bg-white rounded-ios shadow-ios-sm py-10 text-center text-[15px] text-ios-tertiary">No notes yet. Tap + to write one.</div>
+          <div className="bg-white rounded-ios shadow-tile py-10 text-center text-[15px] text-ios-tertiary">No notes yet. Tap + to write one.</div>
         ) : (
           <div className="space-y-3"><AnimatePresence initial={false}>{recent.map((n) => <NoteCard key={n.id} note={n} onOpen={() => setEditing(n)} onPin={() => s.togglePin(n.id)} />)}</AnimatePresence></div>
         )}
@@ -94,7 +94,7 @@ function NoteEditor({ editing, onClose }: { editing: Note | 'new' | null; onClos
         <>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={save} className="absolute inset-0 bg-black/40 z-[60]" />
           <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="absolute bottom-0 left-0 right-0 bg-ios-bg rounded-t-sheet z-[70] flex flex-col shadow-ios-lg" style={{ height: '88%' }}>
+            className="absolute bottom-0 left-0 right-0 bg-paper rounded-t-sheet z-[70] flex flex-col shadow-ios-lg" style={{ height: '88%' }}>
             <div className="w-full flex justify-center pt-3 pb-1"><div className="w-10 h-1.5 bg-ios-tertiary rounded-full" /></div>
             <div className="flex justify-between items-center px-4 py-3 ios-hairline-b">
               {existing ? (
