@@ -91,6 +91,8 @@
     el.streakValue = document.getElementById("streakValue");
     el.consistencyValue = document.getElementById("consistencyValue");
     el.todayDoneValue = document.getElementById("todayDoneValue");
+    el.todayPercentValue = document.getElementById("todayPercentValue");
+    el.todayRing = document.getElementById("todayRing");
     el.addTaskHeading = document.getElementById("addTaskHeading");
     el.addTaskCard = document.getElementById("addTaskCard");
     el.taskListHeading = document.getElementById("taskListHeading");
@@ -971,9 +973,16 @@
       saveState();
     }
 
+    const todayPercent = total ? Math.round((completed / total) * 100) : 0;
     el.streakValue.textContent = streak + " day" + (streak === 1 ? "" : "s");
     el.consistencyValue.textContent = computeConsistencyScore() + "%";
     el.todayDoneValue.textContent = completed + " / " + total;
+    if (el.todayPercentValue) {
+      el.todayPercentValue.textContent = todayPercent + "%";
+    }
+    if (el.todayRing) {
+      el.todayRing.style.setProperty("--p", String(todayPercent));
+    }
   }
 
   function renderTasks() {
