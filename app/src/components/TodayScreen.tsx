@@ -31,11 +31,12 @@ export function TodayScreen({ onFocus }: { onFocus: () => void }) {
   const minutesLeft = tasks.filter((t) => !t.completed).reduce((a, t) => a + t.minutes, 0)
   const intention = s.state.intentions[today] || ''
 
-  // Earned confetti when the day's list flips to fully complete.
-  const wasComplete = useRef(false)
+  // Earned confetti when the day's list flips to fully complete — but not on
+  // first render (opening the app to an already-finished day isn't a new win).
+  const wasComplete = useRef<boolean | null>(null)
   useEffect(() => {
     const complete = tasks.length > 0 && done === tasks.length
-    if (complete && !wasComplete.current) celebrate()
+    if (wasComplete.current !== null && complete && !wasComplete.current) celebrate()
     wasComplete.current = complete
   }, [done, tasks.length])
 

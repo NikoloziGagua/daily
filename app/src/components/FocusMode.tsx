@@ -5,6 +5,12 @@ import { useStore } from '../store'
 import { dateKey } from '../util'
 import { celebrate, haptic } from '../fx'
 
+const card = {
+  enter: { opacity: 0, y: 26, scale: 0.95 },
+  center: { opacity: 1, y: 0, scale: 1 },
+  exit: (d: number) => ({ x: d > 0 ? 360 : -360, opacity: 0, rotate: d > 0 ? 14 : -14, transition: { duration: 0.3 } }),
+}
+
 export function FocusMode({ open, onClose }: { open: boolean; onClose: () => void }) {
   const s = useStore()
   const today = dateKey()
@@ -69,9 +75,10 @@ export function FocusMode({ open, onClose }: { open: boolean; onClose: () => voi
                   <motion.div
                     key={current.id}
                     custom={dir}
-                    initial={{ opacity: 0, y: 26, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={(d: number) => ({ x: d > 0 ? 360 : -360, opacity: 0, rotate: d > 0 ? 14 : -14, transition: { duration: 0.3 } })}
+                    variants={card}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
                     drag="x" dragSnapToOrigin dragElastic={0.7} onDragEnd={onEnd}
                     className="absolute inset-0 rounded-[30px] bg-card shadow-pop p-7 flex flex-col"
@@ -97,8 +104,10 @@ export function FocusMode({ open, onClose }: { open: boolean; onClose: () => voi
           <div className="relative flex justify-center items-center gap-8 pb-8">
             {current ? (
               <>
-                <button onClick={skip} className="w-16 h-16 rounded-full bg-card shadow-tile grid place-content-center text-sub active:scale-90 transition-transform"><RotateCcw size={24} /></button>
-                <button onClick={complete} className="w-[78px] h-[78px] rounded-full bg-ink text-white grid place-content-center shadow-pop active:scale-90 transition-transform"><Check size={34} strokeWidth={2.6} /></button>
+                {queue.length > 1 && (
+                  <button onClick={skip} aria-label="Skip for now" className="w-16 h-16 rounded-full bg-card shadow-tile grid place-content-center text-sub active:scale-90 transition-transform"><RotateCcw size={24} /></button>
+                )}
+                <button onClick={complete} aria-label="Mark complete" className="w-[78px] h-[78px] rounded-full bg-ink text-white grid place-content-center shadow-pop active:scale-90 transition-transform"><Check size={34} strokeWidth={2.6} /></button>
               </>
             ) : (
               <button onClick={onClose} className="px-8 h-12 rounded-full bg-ink text-white font-semibold active:scale-95 transition-transform">Done</button>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { AppState, Note, Task, Context } from './types'
 import { addDays, clampMinutes, dateKey, uid } from './util'
 
@@ -81,12 +81,25 @@ const Ctx = createContext<Store | null>(null)
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(() => rollover(load()))
-  const first = useRef(true)
 
   useEffect(() => {
-    if (first.current) { first.current = false }
     try { localStorage.setItem(KEY, JSON.stringify(state)) } catch {}
   }, [state])
+
+  // Re-run rollover when the day changes while the app stays open
+  // (PWA left open past midnight, or resumed from the background days later).
+  useEffect(() => {
+    const check = () => setState((s) => rollover(s)) // no-op (same ref) unless the day changed
+    const onVisible = () => { if (document.visibilityState === 'visible') check() }
+    const id = setInterval(check, 60_000)
+    document.addEventListener('visibilitychange', onVisible)
+    window.addEventListener('focus', check)
+    return () => {
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVisible)
+      window.removeEventListener('focus', check)
+    }
+  }, [])
 
   const api = useMemo<Store>(() => {
     const tasksForDate = (d: string) => state.tasks.filter((t) => t.date === d)
@@ -132,13 +145,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           ],
         })),
       toggleTask: (id) =>
-        setState((s) => {
-          let best = s.bestStreak
-          const tasks = s.tasks.map((t) =>
+        setState((s) => ({
+          ...s,
+          tasks: s.tasks.map((t) =>
             t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? new Date().toISOString() : null } : t
-          )
-          return { ...s, tasks }
-        }),
+          ),
+        })),
       updateTask: (id, fields) =>
         setState((s) => ({ ...s, tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...fields } : t)) })),
       deleteTask: (id) => setState((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== id) })),

@@ -26,6 +26,8 @@ export function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) =
             <button
               key={t.id}
               onClick={() => { onChange(t.id); haptic(8) }}
+              aria-label={t.label}
+              aria-current={on ? 'page' : undefined}
               className="relative flex items-center gap-1.5 rounded-full px-3.5 py-2.5 z-10"
             >
               {on && <motion.span layoutId="tabpill" className="absolute inset-0 -z-10 rounded-full bg-ink" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}

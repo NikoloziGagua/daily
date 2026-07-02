@@ -1,7 +1,7 @@
 // Network-first service worker. Always serves fresh content when online,
 // falls back to cache offline. Avoids the stale-asset problems of precaching
 // hashed build files by name.
-const CACHE = 'daily-compass-v10';
+const CACHE = 'daily-compass-v11';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

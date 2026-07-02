@@ -27,7 +27,7 @@ function Shell() {
 
   return (
     <div className="min-h-[100dvh] flex justify-center" style={{ background: '#E5D0B4' }}>
-      <div className="relative w-full max-w-[500px] min-h-[100dvh] flex flex-col overflow-hidden"
+      <div className="relative w-full max-w-[500px] h-[100dvh] flex flex-col overflow-hidden"
         style={{ background: 'linear-gradient(160deg,#F8EFE0 0%,#F3E2CF 55%,#EBD3B8 100%)' }}>
         {/* warm blobs for the glass to pick up */}
         <div className="pointer-events-none absolute inset-0 z-0" style={{ background:
@@ -38,7 +38,7 @@ function Shell() {
         {/* film grain */}
         <div className="pointer-events-none absolute inset-0 z-[5] opacity-[0.05] mix-blend-multiply" style={{ backgroundImage: GRAIN }} />
 
-        <main className="relative z-10 flex-1 overflow-y-auto hide-scrollbar" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <main className="relative z-10 flex-1 min-h-0 overflow-y-auto hide-scrollbar" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <AnimatePresence mode="wait">
             {tab === 'today' && <TodayScreen key="today" onFocus={() => { haptic(10); setFocusOpen(true) }} />}
             {tab === 'dashboard' && <DashboardScreen key="dashboard" />}
